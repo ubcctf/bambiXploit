@@ -1,22 +1,16 @@
-use std::env;
-use std::io;
-use std::io::{BufRead, BufReader, Read, Write};
-use std::net::{IpAddr, TcpStream};
-use std::process::{exit, Command, Stdio};
-use std::sync::mpsc::{Receiver, Sender};
-use std::time::{Duration, Instant};
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use clap::{App, AppSettings, Arg};
 use config::LoadConfigError;
 
 mod config;
-mod events;
+// mod events;
 mod exploits;
 mod stats;
 mod submit;
-mod templates;
-mod ui;
+// mod templates;
+// mod ui;
+mod textui;
 
 fn main() -> Result<(), LoadConfigError> {
     let matches = App::new("enoxploit")
@@ -48,8 +42,9 @@ fn main() -> Result<(), LoadConfigError> {
         .map(String::from)
         .collect();
     let stats = Arc::new(stats::BambiStats::new());
-    ui::initialize(stats.clone())?;
+    // ui::initialize(stats.clone())?;
+    textui::initialize(stats.clone(), config.clone());
 
-    exploits::run(Arc::new(command), Arc::new(config), stats);
+    exploits::run(command, config, stats);
     Ok(())
 }
